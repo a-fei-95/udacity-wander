@@ -12,6 +12,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.example.android.wander.databinding.ActivityMapsBinding
+import java.util.Locale
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -52,6 +53,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         map.addMarker(MarkerOptions().position(torontoLatLng).title("I'm moving to my friend's!"))
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(torontoLatLng, zoomLevel))
+
+        setMapLongClick(map)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -66,18 +69,39 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             map.mapType = GoogleMap.MAP_TYPE_NORMAL
             true
         }
+
         R.id.hybrid_map -> {
             map.mapType = GoogleMap.MAP_TYPE_HYBRID
             true
         }
+
         R.id.satellite_map -> {
             map.mapType = GoogleMap.MAP_TYPE_SATELLITE
             true
         }
+
         R.id.terrain_map -> {
             map.mapType = GoogleMap.MAP_TYPE_TERRAIN
             true
         }
+
         else -> super.onOptionsItemSelected(item)
+    }
+
+    private fun setMapLongClick(map: GoogleMap) {
+        map.setOnMapLongClickListener { latLng ->
+            val snippet = String.format(
+                Locale.getDefault(),
+                "Lat: %1$.5f, Long: %2$.5f",
+                latLng.latitude,
+                latLng.longitude
+            )
+            map.addMarker(
+                MarkerOptions()
+                    .position(latLng)
+                    .title(getString(R.string.dropped_pin))
+                    .snippet(snippet)
+            )
+        }
     }
 }
